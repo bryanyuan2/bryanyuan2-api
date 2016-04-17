@@ -3,7 +3,7 @@ var flickr = require('./routes/flickr');
 var search = require('./routes/search');
 var app = express();
 var bodyParser = require('body-parser');
-var port = 3001;
+var port = 8080;
 var router = express.Router();
 var helmet = require('helmet');
 var cors = require('cors');
@@ -25,7 +25,7 @@ router.get('/search/query/:id', search.test);
 
 /* */
 var whitelist = [
-    'http://localhost:3001',
+    'http://localhost',
 ];
 var corsOptions = {
     origin: function(origin, callback){
