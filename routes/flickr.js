@@ -2,8 +2,8 @@ var _ = require("lodash");
 var Promise = require('promise');
 var Flickr = require("flickrapi");
 var flickrOptions = {
-    api_key: "84d2372d0e0894f288aeb2ae77ab3de2",
-    secret: ""
+    api_key: process.env.FLICKR_API_KEY,
+    secret: process.env.FLICKR_API_SECRET
 };
 var info = {
     userId: "27966503@N05",
