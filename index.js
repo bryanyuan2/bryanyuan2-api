@@ -25,7 +25,7 @@ router.get('/search/query/:id', search.test);
 
 /* */
 var whitelist = [
-    'http://localhost',
+    'http://localhost:3000',
 ];
 var corsOptions = {
     origin: function(origin, callback){
@@ -35,6 +35,7 @@ var corsOptions = {
     credentials: true
 };
 app.use(cors(corsOptions));
+
 /* */
 
 app.use('/api', router);
