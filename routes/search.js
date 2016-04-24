@@ -4,8 +4,9 @@ var Flickr = require("flickrapi");
 var elasticsearch = require('elasticsearch');
 
 var client = new elasticsearch.Client({
-  apiVersion: '2.1',
-  host: 'http://127.0.0.1:9200'
+  host: 'http://localhost:9200',
+  requestTimeout: Infinity, // Tested
+  keepAlive: true // Tested
 });
 
 var searchModel = {};
