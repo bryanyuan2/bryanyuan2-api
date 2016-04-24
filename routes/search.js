@@ -2,14 +2,10 @@ var _ = require("lodash");
 var Promise = require('promise');
 var Flickr = require("flickrapi");
 var elasticsearch = require('elasticsearch');
-var AgentKeepAlive = require('agentkeepalive');
 
 var client = new elasticsearch.Client({
   apiVersion: '2.1',
-  host: 'http://localhost:9200',
-  createNodeAgent(connection, config) {
-    return new AgentKeepAlive(connection.makeAgentConfig(config));
-  }
+  host: 'http://127.0.0.1:9200'
 });
 
 var searchModel = {};
