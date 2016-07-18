@@ -1,3 +1,8 @@
+/*
+    app name: bryanyuan2-api
+    author: bryanyuan2@gmail.com
+    description: elasticsearch as middleware for bryanyuan2.github.io
+*/
 var express = require('express');
 var search = require('./routes/search');
 var app = express();
@@ -16,10 +21,9 @@ router.get('/', function(req, res) {
     res.json({ message: 'bryanyuan2 heroku API' });
 });
 
-/* search api/media */
+/* search api */
 router.get('/search/query/:id', search.getSearchResult);
 
-/* */
 var whitelist = [ 'http://localhost:3000' ];
 var corsOptions = {
     origin: function(origin, callback){

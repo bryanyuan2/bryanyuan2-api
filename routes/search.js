@@ -1,13 +1,38 @@
+/*
+    app name: bryanyuan2-api
+    author: bryanyuan2@gmail.com
+    description: elasticsearch as middleware for bryanyuan2.github.io
+*/
 var _ = require("lodash");
 var Promise = require('promise');
 var elasticsearch = require('elasticsearch');
 var client = new elasticsearch.Client({
   host: 'http://localhost:9200',
-  requestTimeout: Infinity, // Tested
-  keepAlive: true // Tested
+  requestTimeout: Infinity,
+  keepAlive: true
 });
 var searchModel = {};
 
+var searchMediaQuery = function(conf) {
+    return new Promise(function (resolve, reject) {
+        client.search({
+          index: conf.index,
+          type: conf.type,
+          q: conf.query,
+          size: conf.limit
+        }).then(function (body) {
+          var hits = body.hits.hits;
+          resolve(hits);
+        }, function (error) {
+          console.trace(error.message);
+        });
+    });
+}
+
+/*
+  index: bryanyuan2
+  type: media
+*/
 searchModel.getSearchResult = function(req, res) {
     var output = res;
     var conf = {
@@ -22,22 +47,5 @@ searchModel.getSearchResult = function(req, res) {
         output.send(json);
     });
 };
-
-function searchMediaQuery(conf) {
-    return new Promise(function (resolve, reject) {
-        client.search({
-          index: conf.index,
-          type: conf.type,
-          q: conf.query,
-          size: conf.limit
-        }).then(function (body) {
-          var hits = body.hits.hits;
-          resolve(hits);
-        }, function (error) {
-          //console.trace(error.message);
-        });
-    });
-}
-
 
 module.exports = searchModel;
