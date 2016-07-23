@@ -24,7 +24,11 @@ router.get('/', function(req, res) {
 /* search api */
 router.get('/search/query/:id', search.getSearchResult);
 
-var whitelist = [ 'http://localhost:3000' ];
+var whitelist = [
+    'http://localhost:3000',
+    'http://bryanyuan2.github.io',
+];
+
 var corsOptions = {
     origin: function(origin, callback){
         var originIsWhitelisted = whitelist.indexOf(origin) !== -1;

@@ -6,8 +6,10 @@
 var _ = require("lodash");
 var Promise = require('promise');
 var elasticsearch = require('elasticsearch');
+var config = require('./../env.json')[process.env.NODE_ENV || 'development'];
+
 var client = new elasticsearch.Client({
-  host: 'http://localhost:9200',
+  host: config.SEARCH_API.DOMAIN,
   requestTimeout: Infinity,
   keepAlive: true
 });
@@ -36,8 +38,8 @@ var searchMediaQuery = function(conf) {
 searchModel.getSearchResult = function(req, res) {
     var output = res;
     var conf = {
-        index: 'bryanyuan2',
-        type: 'media',
+        index: config.SEARCH_API.DOMAIN.ES_INDEX,
+        type: config.SEARCH_API.DOMAIN.ES_TYPE,
         query: req.params.id || 'yahoo',
         limit: req.param('limit') || 10
     };
