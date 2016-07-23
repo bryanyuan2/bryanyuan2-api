@@ -7,11 +7,18 @@ var _ = require("lodash");
 var Promise = require('promise');
 var elasticsearch = require('elasticsearch');
 var config = require('./../env.json')[process.env.NODE_ENV || 'development'];
+var AgentKeepAlive = require('agentkeepalive');
 
 var client = new elasticsearch.Client({
   host: config.SEARCH_API.DOMAIN,
   requestTimeout: Infinity,
-  keepAlive: true
+  maxRetries: 10,
+  maxSockets: 10,
+  minSockets: 10,
+  keepAlive: true,
+  createNodeAgent(connection, config) {
+    return new AgentKeepAlive(connection.makeAgentConfig(config));
+  }
 });
 var searchModel = {};
 
