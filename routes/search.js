@@ -24,10 +24,11 @@ var searchModel = {};
 
 var searchMediaQuery = function(conf) {
     return new Promise(function (resolve, reject) {
+        console.log("query: ", conf.query);
         client.search({
           index: conf.index,
           type: conf.type,
-          q: conf.query,
+          q: escape(conf.query),
           size: conf.limit
         }).then(function (body) {
           var hits = body.hits.hits;
