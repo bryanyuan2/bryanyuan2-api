@@ -4,8 +4,8 @@
   "description": "bryanyuan2 heroku api with express 4",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "go": "nodemon index.js"
+    "dev": "NODE_ENV=development node index.js",
+    "prod": "NODE_ENV=production node index.js"
   },
   "dependencies": {
     "agentkeepalive": "^2.2.0",
