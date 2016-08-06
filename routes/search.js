@@ -10,6 +10,7 @@ var config = require('./../env.json')[process.env.NODE_ENV || 'development'];
 var AgentKeepAlive = require('agentkeepalive');
 
 var client = new elasticsearch.Client({
+  apiVersion: '2.1',
   host: config.SEARCH_API.DOMAIN,
   requestTimeout: Infinity,
   maxRetries: 10,
