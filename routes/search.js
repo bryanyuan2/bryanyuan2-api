@@ -13,7 +13,7 @@ var client = new elasticsearch.Client({
   apiVersion: '2.1',
   host: config.SEARCH_API.DOMAIN,
   requestTimeout: Infinity,
-  deadTimeout: 6000
+  deadTimeout: 6000,
   maxRetries: 10,
   maxSockets: 10,
   minSockets: 10,
