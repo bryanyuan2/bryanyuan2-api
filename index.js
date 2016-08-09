@@ -5,6 +5,7 @@
 */
 var express = require('express');
 var search = require('./routes/search');
+var novel = require('./routes/novel');
 var app = express();
 var bodyParser = require('body-parser');
 var router = express.Router();
@@ -24,6 +25,9 @@ router.get('/', function(req, res) {
 /* search api */
 router.get('/search/query/:id', search.getSearchResult);
 
+/* novel api */
+router.get('/novel/actor/:gid', novel.getActorRelation);
+
 var whitelist = [
     'http://localhost:3000',
     'http://bryanyuan2.github.io',
@@ -36,6 +40,8 @@ var corsOptions = {
     },
     credentials: true
 };
+
+app.use(express.static('public'));
 
 app.use(cors(corsOptions));
 app.use('/api', router);

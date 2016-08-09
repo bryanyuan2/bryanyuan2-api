@@ -13,6 +13,7 @@ var client = new elasticsearch.Client({
   apiVersion: '2.1',
   host: config.SEARCH_API.DOMAIN,
   requestTimeout: Infinity,
+  deadTimeout: 6000
   maxRetries: 10,
   maxSockets: 10,
   minSockets: 10,
@@ -36,6 +37,7 @@ var searchMediaQuery = function(conf) {
           resolve(hits);
         }, function (error) {
           console.trace(error.message);
+          resolve(error.message);
         });
     });
 }
