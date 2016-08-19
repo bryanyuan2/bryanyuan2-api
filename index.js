@@ -42,9 +42,10 @@ var corsOptions = {
 };
 
 app.use(express.static('public'));
-
 app.use(cors(corsOptions));
 app.use('/api', router);
 
 app.listen(port);
 console.log('port ' + port);
+
+
