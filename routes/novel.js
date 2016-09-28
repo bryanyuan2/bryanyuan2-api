@@ -3,16 +3,15 @@
     author: bryanyuan2@gmail.com
     description: novel api
 */
-var _ = require("lodash");
-var Promise = require('promise');
-var config = require('./../env.json')[process.env.NODE_ENV || 'development'];
-
-var novelModel = {};
+var _ = require("lodash"),
+    Promise = require('promise'),
+    fs = require('fs'),
+    MongoClient = require('mongodb').MongoClient,
+    config = require('./../env.json')[process.env.NODE_ENV || 'development'];
 
 /* mongodb */
-var MongoClient = require('mongodb').MongoClient;
 var url = 'mongodb://localhost:27017/bryanyuan2';
-var fs = require('fs');
+var novelModel = {};
 
 var searchMediaQuery = function(conf) {
     return new Promise(function (resolve, reject) {
@@ -31,10 +30,8 @@ var searchMediaQuery = function(conf) {
     });
 }
 
-
 novelModel.getActorRelation = function(req, res) {
     var output = res;
-
     var charName = req.params.gid;
     //connect mongodb
     MongoClient.connect(url, function(err, db) {
