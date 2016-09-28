@@ -3,54 +3,51 @@
     author: bryanyuan2@gmail.com
     description: elasticsearch as middleware for bryanyuan2.github.io
 */
-var _ = require("lodash");
-var Promise = require('promise');
-var elasticsearch = require('elasticsearch');
-var config = require('./../env.json')[process.env.NODE_ENV || 'development'];
-var AgentKeepAlive = require('agentkeepalive');
+var _ = require("lodash"),
+    Promise = require('promise'),
+    elasticsearch = require('elasticsearch'),
+    AgentKeepAlive = require('agentkeepalive'),
+    MongoClient = require('mongodb').MongoClient;
 
-/* mongodb */
-var MongoClient = require('mongodb').MongoClient;
-
-/* elasticsearch */
-var client = new elasticsearch.Client({
-  apiVersion: '2.1',
-  host: config.SEARCH_API.DOMAIN,
-  requestTimeout: Infinity,
-  deadTimeout: 6000,
-  maxRetries: 10,
-  maxSockets: 10,
-  minSockets: 10,
-  keepAlive: true,
-  createNodeAgent(connection, config) {
-    return new AgentKeepAlive(connection.makeAgentConfig(config));
-  }
-});
-var mongodbConf = {
-  host: 'localhost',
-  port: '27017',
-  db: 'bryanyuan2',
-  collection: 'search'
-};
-var searchModel = {};
+var config = require('./../env.json')[process.env.NODE_ENV || 'development'],
+    elasticClient = new elasticsearch.Client({
+        apiVersion: '2.1',
+        host: config.SEARCH_API.DOMAIN,
+        requestTimeout: Infinity,
+        deadTimeout: 6000,
+        maxRetries: 10,
+        maxSockets: 10,
+        minSockets: 10,
+        keepAlive: true,
+        createNodeAgent(connection, config) {
+            return new AgentKeepAlive(connection.makeAgentConfig(config));
+        }
+    }),
+    mongodbConf = {
+        host: process.env.MONGODB_HOST,
+        port: process.env.MONGODB_PORT,
+        db: process.env.MONGODB_DB,
+        collection: process.env.MONGODB_COLLECTION
+    },
+    searchModel = {};
 
 /* elasticsearch */
 var searchMediaQuery = function(conf) {
     return new Promise(function (resolve, reject) {
         console.log("query: ", conf.query);
-        client.search({
-          index: conf.index,
-          type: conf.type,
-          q: escape(conf.query),
-          size: conf.limit
+        elasticClient.search({
+            index: conf.index,
+            type: conf.type,
+            q: escape(conf.query),
+            size: conf.limit
         }).then(function (body) {
-          resolve({
-            conf: conf,
-            hits: JSON.stringify(body.hits.hits)
-          });
+            resolve({
+              conf: conf,
+              hits: JSON.stringify(body.hits.hits)
+            });
         }, function (error) {
-          console.trace(error.message);
-          resolve(error.message);
+            console.trace(error.message);
+            resolve(error.message);
         });
     });
 }
