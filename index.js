@@ -14,6 +14,7 @@ var app = express(),
 var whitelist = [
         'http://localhost:3000',
         'http://bryanyuan2.github.io',
+        'http://bryanyuan2-bookmarks.github.io',
     ],
     corsOptions = {
         origin: function(origin, callback){
