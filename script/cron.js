@@ -31,7 +31,7 @@ var urlExtactor = function (url, output) {
 var htmlExtactor = function (data) {
   return new Promise(function (resolve, reject) {
     content = extractor(data.body);
-    resolve({data: content, output: data.output});
+    resolve({ data: content, output: data.output });
   });
 }
 
@@ -70,7 +70,7 @@ var metadataExtractor = function(data) {
             _links: content.links,
             _text: content.text
         }
-        resolve({ data: metadata, output: data.output})
+        resolve({ data: metadata, output: data.output })
     });
 }
 

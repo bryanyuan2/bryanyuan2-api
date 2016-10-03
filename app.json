@@ -1,7 +1,7 @@
 {
   "name": "bryanyuan2-api",
   "description": "bryanyuan2 API on digitalocean.com",
-  "repository": "https://github.com/heroku/node-js-getting-started",
+  "repository": "https://github.com/bryanyuan2/bryanyuan2-api",
   "logo": "http://node-js-sample.herokuapp.com/node.svg",
   "keywords": [
     "node",
