@@ -7,7 +7,7 @@ var _ = require("lodash"),
     Promise = require('promise'),
     fs = require('fs'),
     MongoClient = require('mongodb').MongoClient,
-    config = require('./../env.json')[process.env.NODE_ENV || 'development'];
+    config = require('./../../env.json')[process.env.NODE_ENV || 'development'];
 
 /* mongodb */
 var url = 'mongodb://localhost:27017/bryanyuan2';
