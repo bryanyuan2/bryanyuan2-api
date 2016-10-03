@@ -13,14 +13,26 @@
     "body-parser": "^1.15.0",
     "cors": "^2.7.1",
     "ejs": "2.3.3",
-    "elasticsearch": "^11.0.0",
+    "elasticsearch": "11.0.0",
     "express": "4.13.3",
+    "express-search": "^1.0.3",
+    "extractor": "^0.1.2",
+    "favicon": "0.0.2",
     "flickrapi": "^0.4.2",
+    "fs": "0.0.1-security",
     "helmet": "^1.3.0",
+    "html-extractor": "^0.2.2",
+    "http": "0.0.0",
+    "https": "^1.0.0",
+    "instapaper": "^1.1.0",
     "lodash": "^4.7.0",
     "mongodb": "^2.2.5",
+    "node-schedule": "^1.1.1",
     "nodemon": "^1.9.1",
-    "promise": "^7.1.1"
+    "object-assign": "^4.1.0",
+    "promise": "^7.1.1",
+    "request": "^2.75.0",
+    "unfluff": "^1.1.0"
   },
   "engines": {
     "node": "0.10"

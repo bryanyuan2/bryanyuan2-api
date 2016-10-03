@@ -7,33 +7,32 @@ var _ = require("lodash"),
     Promise = require('promise'),
     elasticsearch = require('elasticsearch'),
     AgentKeepAlive = require('agentkeepalive'),
-    MongoClient = require('mongodb').MongoClient;
+    MongoClient = require('mongodb').MongoClient,
+    http = require('http');
 
 var config = require('./../env.json')[process.env.NODE_ENV || 'development'],
-    elasticClient = new elasticsearch.Client({
-        apiVersion: '2.1',
-        host: config.SEARCH_API.DOMAIN,
-        requestTimeout: Infinity,
-        deadTimeout: 6000,
-        maxRetries: 10,
-        maxSockets: 10,
-        minSockets: 10,
-        keepAlive: true,
-        createNodeAgent(connection, config) {
-            return new AgentKeepAlive(connection.makeAgentConfig(config));
-        }
-    }),
+    esConf = {
+      INDEX: process.env.ELASTICSEARCH_INDEX_BRYANYUAN2,
+      TYPE: process.env.ELASTICSEARCH_TYPE_MEDIA
+    },
     mongodbConf = {
         host: process.env.MONGODB_HOST,
         port: process.env.MONGODB_PORT,
         db: process.env.MONGODB_DB,
-        collection: process.env.MONGODB_COLLECTION
+        collection: process.env.MONGODB_COLLECTION_SEARCH
     },
     searchModel = {};
 
 /* elasticsearch */
 var searchMediaQuery = function(conf) {
     return new Promise(function (resolve, reject) {
+        var elasticClient = new elasticsearch.Client({
+          host: 'localhost:9200',
+          createNodeAgent(connection, config) {
+            return http.globalAgent;
+          }
+        });
+
         console.log("query: ", conf.query);
         elasticClient.search({
             index: conf.index,
@@ -79,8 +78,8 @@ var logSearchQueryDB = function(result) {
 */
 searchModel.getSearchResult = function(req, res) {
     var conf = {
-        index: config.SEARCH_API.DOMAIN.ES_INDEX,
-        type: config.SEARCH_API.DOMAIN.ES_TYPE,
+        index: esConf.INDEX,
+        type: esConf.TYPE,
         query: req.params.id || 'yahoo',
         limit: req.param('limit') || 10,
         req: req,
@@ -88,7 +87,6 @@ searchModel.getSearchResult = function(req, res) {
     };
 
     searchMediaQuery(conf).then(logSearchQueryDB);
-
 };
 
 
