@@ -1,7 +1,7 @@
 {
   "name": "bryanyuan2-api",
   "version": "0.1.5",
-  "description": "bryanyuan2 heroku api with express 4",
+  "description": "bryanyuan2 API on digitalocean.com",
   "main": "index.js",
   "scripts": {
     "dev": "NODE_ENV=development nodemon index.js",
@@ -39,11 +39,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/heroku/node-js-getting-started"
+    "url": "https://github.com/bryanyuan2/bryanyuan2-api"
   },
   "keywords": [
     "node",
-    "heroku",
     "express"
   ],
   "license": "MIT"
