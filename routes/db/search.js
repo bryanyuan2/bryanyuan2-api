@@ -38,7 +38,6 @@ var searchMediaQuery = function(conf) {
                 console.log(err);
                 output.send({ 'result': 'error' });
               } else if (result.length) {
-                console.log('result', result);
                 output.send(result);
               } else {
                 console.log('No document(s) found with defined "find" criteria!');
@@ -58,7 +57,6 @@ var logSearchQueryDB = function(result) {
           if(err) {
             throw err;
           }
-          // console.log("req.headers", result.conf.req.headers);
           db.collection(mongodbConf.collection).insertOne({
             "query": result.conf.query,
             "timestamp": Date.now()
