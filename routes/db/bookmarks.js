@@ -42,7 +42,8 @@ bookmarksModel._searchBookmarks = function(req, res) {
             _text: 1,
             _image: 1,
             _tags: 1
-        };
+        },
+        limitOpts = parseInt(req.params.limit) || 10;
 
     console.log("query", query);
 
@@ -50,7 +51,7 @@ bookmarksModel._searchBookmarks = function(req, res) {
       MongoClient.connect(mongodbConnectUrl, function(err, db) {
           if(err) { throw err; }
 
-          db.collection(mongodbConf.collection).find(searchOpt, selectFieldOpts).sort(sortOpts).toArray(function (err, result) {
+          db.collection(mongodbConf.collection).find(searchOpt, selectFieldOpts).limit(limitOpts).sort(sortOpts).toArray(function (err, result) {
             if (err) {
               console.log(err);
               output.send({ 'result': 'error' });
@@ -87,12 +88,13 @@ bookmarksModel._listBookmarks = function(req, res) {
             _image: 1,
             _tags: 1
         },
-        limitNumOpts = 100;
+        limitOpts = parseInt(req.params.limit) || 10;
+
     return new Promise(function (resolve, reject) {
       MongoClient.connect(mongodbConnectUrl, function(err, db) {
           if(err) { throw err; }
 
-          db.collection(mongodbConf.collection).find({}, selectFieldOpts).limit(limitNumOpts).sort(sortOpts).toArray(function (err, result) {
+          db.collection(mongodbConf.collection).find({}, selectFieldOpts).limit(limitOpts).sort(sortOpts).toArray(function (err, result) {
             if (err) {
               console.log(err);
               resolve({ 'status': 'err', 'result': err });
@@ -165,5 +167,34 @@ bookmarksModel._latestBookmarks = function(req, res) {
       });
     });
 }
+
+
+bookmarksModel._timestampBookmarks = function(req, res) {
+    var output = res,
+        selectFieldOpts = { 
+            time: 1
+        };
+
+    return new Promise(function (resolve, reject) {
+      MongoClient.connect(mongodbConnectUrl, function(err, db) {
+          if(err) { throw err; }
+
+          db.collection(mongodbConf.collection).find({}, selectFieldOpts).toArray(function (err, result) {
+            if (err) {
+              console.log(err);
+              resolve({ 'status': 'err', 'result': err });
+            } else if (result.length) {
+              output.send(result);
+              resolve({ 'status': 'ok', 'result': result });
+            } else {
+              console.log('No document(s) found with defined "find" criteria!');
+              resolve({ 'status': 'no' });
+            }
+            db.close();
+          });
+      });
+    });
+}
+
 
 module.exports = bookmarksModel;

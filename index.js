@@ -50,10 +50,15 @@ app.use(express.static('public'));
 
 // route
 route.get('/', index.getMsg);
-route.get('/bookmarks/query/:id', bookmarks._searchBookmarks);
+
+route.get('/bookmarks/query/:id/:limit', bookmarks._searchBookmarks);
 route.get('/bookmarks/list', bookmarks._listBookmarks);
+route.get('/bookmarks/list/:limit', bookmarks._listBookmarks);
 route.get('/bookmarks/count', bookmarks._countBookmarks);
 route.get('/bookmarks/latest', bookmarks._latestBookmarks);
+
+
+route.get('/bookmarks/timestamp', bookmarks._timestampBookmarks);
 
 route.get('/search/query/:id', search.getSearchResult);
 //route.get('/novel/actor/:gid', novel.getActorRelation);
