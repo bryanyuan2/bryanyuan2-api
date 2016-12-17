@@ -1,11 +1,13 @@
 body {
 	padding: 1em 2em;
-    overflow: auto;
     display: block;
     position: relative;
     font-family: Georgia,"Times New Roman", Times, serif;
     background: #fbfbfb;
     color: #080000;
+    font-size: medium;
+    overflow: hidden;
+    width: 100%;
 }
 
 h1 {

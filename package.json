@@ -39,6 +39,7 @@
     "promise": "^7.1.1",
     "reading-time": "^1.1.0",
     "request": "^2.75.0",
+    "sanitize-html": "^1.13.0",
     "striptags": "^2.1.1",
     "unfluff": "^1.1.0"
   },

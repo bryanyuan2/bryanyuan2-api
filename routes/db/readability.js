@@ -32,7 +32,7 @@ readabilityModel._readCleanArticle = function(req, res) {
               resolve({});
             } else if (result.length) {
               var getOnlyResult = result[0];
-              output.render('main', {
+              output.render('mobile', {
                   title: _.get(getOnlyResult, ['title'], ''),
                   content: _.get(getOnlyResult, ['readability'], '')
               });

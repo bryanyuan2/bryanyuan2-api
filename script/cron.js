@@ -8,6 +8,8 @@ var _ = require("lodash"),
     readingTime = require('reading-time'),
     striptags = require('striptags'),
     readability = require('node-readability'),
+    sanitizeHtml = require('sanitize-html'),
+    pUrl = require('url'),
     MongoClient = require('mongodb').MongoClient;
 
 var instapaper = require('./../routes/db/instapaper');
@@ -84,6 +86,14 @@ var faviconExtractor = function(data) {
     });
 }
 
+var domainExtractor = function(data) {
+    console.log("-- domainExtractor");
+    return new Promise(function (resolve, reject) {
+        data.output.host = pUrl.parse(data.output.url).host;
+        resolve(data);
+    });
+}
+
 var readabilityExtractor = function(data) {
     console.log("readabilityExtractor");
 
@@ -91,7 +101,18 @@ var readabilityExtractor = function(data) {
         readability(data.url, function(err, article, meta) {
             var getReadabilityContent = _.get(article, ['content'], '');
             resolve({
-                readability: { readability: getReadabilityContent, readTime: readingTime(striptags(getReadabilityContent)) },
+                readability: {
+                    readability: sanitizeHtml(getReadabilityContent, {
+                        allowedTags: [
+                            'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'ul', 'ol',
+  'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div', 'span', 
+  'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre' ],
+                        parser: {
+                            lowerCaseTags: true
+                        }
+                    }),
+                    readTime: readingTime(striptags(getReadabilityContent))
+                },
                 output: data.output,
                 data: data.data
             });
@@ -140,6 +161,7 @@ var flattenOutput = function(data) {
             urlExtactor(output[i].url, output[i])
                 .then(htmlExtactor)
                 .then(faviconExtractor)
+                .then(domainExtractor)
                 .then(readabilityExtractor)
                 .then(function(data) {
                     callMongodb(objectAssign(data.data, data.output, data.readability));
