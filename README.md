@@ -18,8 +18,8 @@
    - `mongoimport --db "bryanyuan2" --collection "bryanyuan2" --type json --file "data/mondgodb.json" --jsonArray`
 
 - Steps
-   - npm install
-   - sudo -E npm run prod `sudo to get the let's encrypt cert, -E to get process.env`
+   - `npm install`
+   - `sudo -E npm run prod` (sudo to get the let's encrypt cert, -E to get process.env)
 
 - Reference 
    - repo: [bryanyuan2.github.io](https://github.com/bryanyuan2/bryanyuan2.github.com)
