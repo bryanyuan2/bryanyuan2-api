@@ -12,6 +12,12 @@
  - [Let's encrypt on Express](https://lucaschmid.net/anotherblog/letsencrypt-express)
  - [Install MongoDB](http://askubuntu.com/a/621297)
 
+- Import data to MongoDB
+ - please execute the following cmd 2 times
+ - ```
+mongoimport --db "bryanyuan2" --collection "bryanyuan2" --type json --file "data/mondgodb.json" --jsonArray
+```
+
 - Steps
  - npm install
  - sudo -E npm run prod `sudo to get the let's encrypt cert, -E to get process.env`
