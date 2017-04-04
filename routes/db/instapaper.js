@@ -5,7 +5,8 @@
 */
 var _ = require("lodash"),
     Promise = require('promise'),
-    Instapaper = require('instapaper');
+    Instapaper = require('instapaper'),
+    read = require('node-readability');
 
 var config = require('./../../env.json')[process.env.NODE_ENV || 'development'],
     instapaperConfig = {
@@ -25,7 +26,8 @@ extractorModel._getBookmarksList = function() {
     var client = Instapaper(instapaperConfig.CONSUMER_KEY, instapaperConfig.CONSUMER_SECRET);
 
     client.setUserCredentials(instapaperConfig.USER_ID, instapaperConfig.USER_PASSWORD);
-    client.bookmarks.list({limit: 100}).then(function(bookmarks) {
+
+    client.bookmarks.list({limit: 200}).then(function(bookmarks) {
       for (var i=0;i<bookmarks.length;i++) {
           if (bookmarks[i] && bookmarks[i].title) {
             item = bookmarks[i];
@@ -41,6 +43,25 @@ extractorModel._getBookmarksList = function() {
     });
   });
 }
+
+extractorModel._searchBookmarksID = function(bookmarkID) {
+  var json = [],
+      item = {};
+
+  // Load a list of bookmarks using promises...
+  return new Promise(function (resolve, reject) {
+    var client = Instapaper(instapaperConfig.CONSUMER_KEY, instapaperConfig.CONSUMER_SECRET);
+    //console.log("in", bookmarkID);
+    client.setUserCredentials(instapaperConfig.USER_ID, instapaperConfig.USER_PASSWORD);
+    client.bookmarks.getText(bookmarkID).then(function(bookmarks) {
+      console.log("bookmarks", bookmarks);
+      //resolve({ json });
+    }).catch(function(err) {
+      console.warn('oh ERROR', err);
+    });
+  });
+}
+
 
 extractorModel.getBookmarksJson = function(req, res) {
   var output = res;

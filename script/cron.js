@@ -1,10 +1,16 @@
-var schedule = require('node-schedule'),
-    extractor = require('unfluff'),
+var _ = require("lodash"),
+    schedule = require('node-schedule'),
+    unfluff = require('unfluff'),
     Promise = require('promise'),
     request = require('request'),
-    MongoClient = require('mongodb').MongoClient,
     objectAssign = require('object-assign'),
-    favicon = require('favicon');
+    favicon = require('favicon'),
+    readingTime = require('reading-time'),
+    striptags = require('striptags'),
+    readability = require('node-readability'),
+    sanitizeHtml = require('sanitize-html'),
+    pUrl = require('url'),
+    MongoClient = require('mongodb').MongoClient;
 
 var instapaper = require('./../routes/db/instapaper');
 var config = require('./../env.json')[process.env.NODE_ENV || 'development'],
@@ -20,7 +26,7 @@ var urlExtactor = function (url, output) {
   return new Promise(function (resolve, reject) {
     request(url, function (error, response, body) {
       if (!error && response.statusCode == 200) {
-        resolve({ body: body, output: output })
+        resolve({ body: body, output: output, url: url })
       } else {
         resolve({ error: error })
       }
@@ -30,8 +36,26 @@ var urlExtactor = function (url, output) {
 
 var htmlExtactor = function (data) {
   return new Promise(function (resolve, reject) {
-    content = extractor(data.body);
-    resolve({ data: content, output: data.output });
+    var content = unfluff(data.body),
+        metadata = {
+            _title: _.get(content, ['title'], ''),
+            _softTitle: _.get(content, ['softTitle'], ''),
+            _date: _.get(content, ['date'], ''),
+            _author: _.get(content, ['author'], ''),
+            _publisher: _.get(content, ['publisher'], ''),
+            _copyright: _.get(content, ['copyright'], ''),
+            _favicon: _.get(content, ['favicon'], ''),
+            _description: _.get(content, ['description'], ''),
+            _keywords: _.get(content, ['keywords'], ''),
+            _lang: _.get(content, ['lang'], ''),
+            _tags: _.get(content, ['tags'], ''),
+            _image: _.get(content, ['image'], ''),
+            _links: _.get(content, ['links'], ''),
+            _text: _.get(content, ['text'], '')
+        };
+    
+    resolve({ data: metadata, output: data.output, url: data.url });
+
   });
 }
 
@@ -51,28 +75,50 @@ var getBookmarksQueue = function(data) {
   });
 }
 
-var metadataExtractor = function(data) {
-    var content = data.data;
+var faviconExtractor = function(data) {
+    console.log("-- faviconExtractor");
     return new Promise(function (resolve, reject) {
-        var metadata = {
-            _title: content.title,
-            _softTitle: content.softTitle,
-            _date: content.date,
-            _author: content.author,
-            _publisher: content.publisher,
-            _copyright: content.copyright,
-            _favicon: content.favicon,
-            _description: content.description,
-            _keywords: content.keywords,
-            _lang: content.lang,
-            _tags: content.tags,
-            _image: content.image,
-            _links: content.links,
-            _text: content.text
-        }
-        resolve({ data: metadata, output: data.output })
+        var target_url = data.output.url;
+        favicon(target_url, function(err, favicon_url) {
+            data.output.favicon = favicon_url;
+            resolve(data);
+        });
     });
 }
+
+var domainExtractor = function(data) {
+    console.log("-- domainExtractor");
+    return new Promise(function (resolve, reject) {
+        data.output.host = pUrl.parse(data.output.url).host;
+        resolve(data);
+    });
+}
+
+var readabilityExtractor = function(data) {
+    console.log("readabilityExtractor");
+
+    return new Promise(function (resolve, reject) {
+        readability(data.url, function(err, article, meta) {
+            var getReadabilityContent = _.get(article, ['content'], '');
+            resolve({
+                readability: {
+                    readability: sanitizeHtml(getReadabilityContent, {
+                        allowedTags: [
+                            'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'ul', 'ol',
+  'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div', 'span', 
+  'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre' ],
+                        parser: {
+                            lowerCaseTags: true
+                        }
+                    }),
+                    readTime: readingTime(striptags(getReadabilityContent))
+                },
+                output: data.output,
+                data: data.data
+            });
+        });
+    });
+}    
 
 var callMongodb = function(recurBookmarks) {
     console.log("-- call callMongodb");
@@ -104,17 +150,6 @@ var callMongodb = function(recurBookmarks) {
     });
 }
 
-var faviconExtractor = function(data) {
-    console.log("-- faviconExtractor");
-    return new Promise(function (resolve, reject) {
-        favicon(data.output.url, function(err, favicon_url) {
-            // console.log("favicon_url", favicon_url);
-            data.output.favicon = favicon_url;
-            resolve(data)
-        });
-    });
-}
-
 var flattenOutput = function(data) {
     console.log("-- call flattenOutput");
     var output = data.data,
@@ -122,19 +157,23 @@ var flattenOutput = function(data) {
         i;
 
     for (i=0;i<queue.length;i++) {
-        urlExtactor(output[i].url, output[i]).then(htmlExtactor)
-                                             .then(metadataExtractor)
-                                             .then(faviconExtractor)
-                                             .then(function(data){
-            var recurBookmarks = objectAssign(data.data, data.output);
-            callMongodb(recurBookmarks);
-        });
+        try {
+            urlExtactor(output[i].url, output[i])
+                .then(htmlExtactor)
+                .then(faviconExtractor)
+                .then(domainExtractor)
+                .then(readabilityExtractor)
+                .then(function(data) {
+                    callMongodb(objectAssign(data.data, data.output, data.readability));
+                });
+        } catch (err) {
+            console.log("flattenOutput data error", err.message)
+        }
     }
 }
 
 cronTab.scheduleTab = function() {
     var job = schedule.scheduleJob('0 0 23 * * *', function(){
-    //var job = schedule.scheduleJob('* * * * * *', function(){
         console.log('-- crontab should be executed every day at 23:00:00');
 
         instapaper._getBookmarksList()
